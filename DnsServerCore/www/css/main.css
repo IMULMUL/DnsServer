@@ -155,6 +155,12 @@ th a {
     }
 }
 
+@media (min-width: 1300px) {
+    #header .title, .container, #footer .content {
+        width: 1270px;
+    }
+}
+
 .form-inline .form-group {
     margin-right: 10px;
     margin-bottom: 10px;
