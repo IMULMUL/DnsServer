@@ -1,6 +1,6 @@
 ﻿/*
 Technitium DNS Server
-Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2026  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -301,7 +301,7 @@ namespace DnsServerCore
 
                 _dnsServer.DnsApplicationManager.EnableAutomaticUpdate = bR.ReadBoolean();
 
-                _dnsServer.PreferIPv6 = bR.ReadBoolean();
+                _dnsServer.IPv6Mode = bR.ReadBoolean() ? IPv6Mode.Preferred : IPv6Mode.Disabled;
 
                 if (version >= 42)
                 {
@@ -848,7 +848,7 @@ namespace DnsServerCore
                 _webServiceTlsCertificatePassword = string.Empty;
             }
 
-            _dnsServer.PreferIPv6 = bR.ReadBoolean();
+            _dnsServer.IPv6Mode = bR.ReadBoolean() ? IPv6Mode.Preferred : IPv6Mode.Disabled;
 
             if (bR.ReadBoolean()) //logQueries
                 _dnsServer.QueryLogManager = _log;
