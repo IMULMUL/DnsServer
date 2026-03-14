@@ -1,6 +1,6 @@
 ﻿/*
 Technitium DNS Server
-Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2026  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1190,7 +1190,7 @@ namespace AdvancedBlocking
                     {
                         HttpClientNetworkHandler handler = new HttpClientNetworkHandler();
                         handler.Proxy = _dnsServer.Proxy;
-                        handler.NetworkType = _dnsServer.PreferIPv6 ? HttpClientNetworkType.PreferIPv6 : HttpClientNetworkType.Default;
+                        handler.NetworkType = HttpClientNetworkHandler.GetNetworkType(_dnsServer.IPv6Mode);
                         handler.DnsClient = _dnsServer;
 
                         using (HttpClient http = new HttpClient(handler))
