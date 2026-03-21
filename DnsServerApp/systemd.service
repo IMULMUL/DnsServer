@@ -7,6 +7,7 @@ Wants=network-online.target
 Type=simple
 User=dns-server
 Group=dns-server
+SyslogIdentifier=dns-server
 
 WorkingDirectory=/opt/technitium/dns
 ReadWritePaths=/etc/dns /var/log/technitium/dns
@@ -16,12 +17,13 @@ ReadWritePaths=/etc/dns /var/log/technitium/dns
 # that the path is configured below to be accessible in read-only mode.
 # ReadOnlyPaths=/opt/dns-cert.pfx
 
+Environment="OPENSSL_ENABLE_SHA1_SIGNATURES=1"
+
 ExecStart=/usr/bin/dotnet /opt/technitium/dns/DnsServerApp.dll /etc/dns
 
 # Restart service after 10 seconds if the dns service crashes:
 Restart=always
 RestartSec=10
-SyslogIdentifier=dns-server
 
 LockPersonality=true
 NoNewPrivileges=true
