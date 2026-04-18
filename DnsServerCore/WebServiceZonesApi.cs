@@ -1223,7 +1223,7 @@ namespace DnsServerCore
                 }
             }
 
-            private async Task<List<DnsResourceRecord>> ReadRecordsToImportFromAsync(string zoneName, AuthZoneType zoneType, string catalogZoneName, bool overwrite, TextReader zoneFile)
+            private async Task<List<DnsResourceRecord>> ReadRecordsToImportFromAsync(string zoneName, AuthZoneType zoneType, string catalogZoneName, bool overwriteRecords, TextReader zoneFile)
             {
                 List<DnsResourceRecord> records = await ZoneFile.ReadZoneFileFromAsync(zoneFile, zoneName, _dnsWebService._dnsServer.AuthZoneManager.DefaultRecordTtl);
                 List<DnsResourceRecord> newRecords = new List<DnsResourceRecord>(records.Count);
@@ -1423,7 +1423,7 @@ namespace DnsServerCore
                         }
                     }
 
-                    if (overwrite)
+                    if (overwriteRecords)
                     {
                         if ((nsCount > 0) && (nsCount != _dnsWebService._clusterManager.ClusterNodes.Count)) //check attempt to replace NS records
                             throw new DnsWebServiceException("Cannot import NS records for Primary zones that are members of the Cluster Catalog zone. These NS records are automatically managed by the Cluster and only their TTL values can be updated.");
@@ -1862,7 +1862,7 @@ namespace DnsServerCore
                     }
 
                     //import records
-                    _dnsWebService._dnsServer.AuthZoneManager.ImportRecords(zoneInfo.Name, importRecords, false, false);
+                    _dnsWebService._dnsServer.AuthZoneManager.ImportRecords(zoneInfo.Name, importRecords, false, false, false);
                 }
 
                 Utf8JsonWriter jsonWriter = context.GetCurrentJsonWriter();
@@ -1892,7 +1892,8 @@ namespace DnsServerCore
                 if (!_dnsWebService._authManager.IsPermitted(PermissionSection.Zones, zoneInfo.Name, sessionUser, PermissionFlag.Modify))
                     throw new DnsWebServiceException("Access was denied.");
 
-                bool overwrite = request.GetQueryOrForm("overwrite", bool.Parse, true);
+                bool overwriteRecords = request.GetQueryOrForm("overwrite", bool.Parse, true);
+                bool overwriteZone = request.GetQueryOrForm("overwriteZone", bool.Parse, false);
                 bool overwriteSoaSerial = request.GetQueryOrForm("overwriteSoaSerial", bool.Parse, false);
 
                 TextReader textReader;
@@ -1920,10 +1921,10 @@ namespace DnsServerCore
 
                 using (TextReader zoneFile = textReader)
                 {
-                    records = await ReadRecordsToImportFromAsync(zoneInfo.Name, zoneInfo.Type, zoneInfo.CatalogZoneName, overwrite, zoneFile);
+                    records = await ReadRecordsToImportFromAsync(zoneInfo.Name, zoneInfo.Type, zoneInfo.CatalogZoneName, overwriteRecords, zoneFile);
                 }
 
-                _dnsWebService._dnsServer.AuthZoneManager.ImportRecords(zoneInfo.Name, records, overwrite, overwriteSoaSerial);
+                _dnsWebService._dnsServer.AuthZoneManager.ImportRecords(zoneInfo.Name, records, overwriteRecords, overwriteZone, overwriteSoaSerial);
 
                 _dnsWebService._log.Write(context.GetRemoteEndPoint(_dnsWebService._webServiceRealIpHeader), "[" + sessionUser.Username + "] Total " + records.Count + " record(s) were imported successfully into " + zoneInfo.TypeName + " zone: " + zoneInfo.DisplayName);
             }
