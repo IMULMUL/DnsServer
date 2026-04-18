@@ -43,6 +43,8 @@ namespace AdvancedBlocking
     {
         #region variables
 
+        readonly static JsonDocumentOptions _jsonParseOptions = new JsonDocumentOptions() { CommentHandling = JsonCommentHandling.Skip };
+
         IDnsServer? _dnsServer;
 
         DnsSOARecordData? _soaRecord;
@@ -341,12 +343,15 @@ namespace AdvancedBlocking
 
         #region public
 
-        public async Task InitializeAsync(IDnsServer dnsServer, string config)
+        public async Task InitializeAsync(IDnsServer dnsServer, string? config)
         {
             _dnsServer = dnsServer;
 
+            if (config is null)
+                throw new InvalidOperationException();
+
             Directory.CreateDirectory(Path.Combine(_dnsServer.ApplicationFolder, "blocklists"));
-            using JsonDocument jsonDocument = JsonDocument.Parse(config);
+            using JsonDocument jsonDocument = JsonDocument.Parse(config, _jsonParseOptions);
             JsonElement jsonConfig = jsonDocument.RootElement;
 
             _enableBlocking = jsonConfig.GetPropertyValue("enableBlocking", true);
