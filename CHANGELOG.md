@@ -1,5 +1,13 @@
 # Technitium DNS Server Change Log
 
+## Version 15.0.1
+Release Date: 26 April 2026
+
+- Fixed issue that caused cluster API token to fail to sync when a secondary node joins a cluster.
+- Fixed issue of incorrect sync state for SSO group map on secondary nodes.
+- Added SSO scopes required by some SSO providers.
+- Fixed typo in Prometheus metrics API text output.
+
 ## Version 15.0
 Release Date: 25 April 2026
 
